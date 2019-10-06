@@ -8,51 +8,53 @@ String pass;
 static int accounts=0;
 Vector<Account> v= new Vector<Account>();
 Vector <Transaction> t=new Vector<Transaction>();
-/*Customer(String x,String y,int z,int a,int b,int c,int d){
-nam=x;
-address=y;
-card_no=z;
-pin=a;
-dd=b;mm=c;yy=d;
-}*/
+static Scanner sc=new Scanner(System.in);
+int flagp = 3; 
 
 boolean verifyPassword(String p){
 if(p.equals(pass)){
+flagp = 3;
 System.out.println("Verified User");
-
 return true;
 }
 else{
-System.out.println("Verification failed");
-return false;
+  flagp--;
+  if(flagp != 0){
+    System.out.println("Incorrect Password. " + flagp + " attempt(s) left");
+    System.out.println("Enter password:");
+    p=sc.next();
+    return verifyPassword(p);
+  }
+  else{
+    flagp = 3;
+    System.out.println("Verification failed");
+    return false;
+  }
 }
-
 }
-
 }
-
 
 class Account extends Customer{
 int account_no;
-float balence;
+float balance;
 
 Account(){
-balence=0;
+balance=0;
 }
 
 int deposit(float x){
-balence+=x;
+balance+=x;
 return 1;
 }
 int withdraw(float y){
-if(balence>0)
+if(balance>0)
 {
-balence-=y;
+balance-=y;
 return 1;
 }
 else
 {
-System.out.println("Can't withdraw anymore");
+System.out.println("Insufficient Balance");
 return 0;
 }
 }
@@ -62,20 +64,21 @@ class Transaction{
 static Scanner s=new Scanner(System.in);
 
 int transaction_id;
-
 String type;
 float amount;
-float balence;
+float balance;
+
 Transaction(int x){
 transaction_id=x;
 }
-void modifies(Account a){
 
-int f,flag;
+void modifies(Account a){
+int f,flag=0;
 System.out.println("Choose Transaction:\n1.Deposit\n2.Withdraw");
 f=s.nextInt();
 System.out.println("Enter amount");
 amount=s.nextFloat();
+
 switch(f){
 case 1:
 flag=a.deposit(amount);
@@ -88,23 +91,18 @@ type="withdrawal";
 break;
 }
 if(flag==1)
-System.out.println("\nSuccessful "+type+" of amount "+amount+"\nBalence of Account number"+a.account_no+" is "+a.balence);
-balence=a.balence;
-
-
-
+System.out.println("\nSuccessful "+type+" of amount "+amount+"\nBalance of Account number "+a.account_no+" is "+a.balance);
+balance=a.balance;
 }
-
 }
 
 class CurrentAccount extends Account{
-
 
 CurrentAccount(){
 super();
 }
 int withdraw(float y){
-super.balence-=y;
+super.balance-=y;
 return 1;
 }
 }
@@ -113,22 +111,18 @@ class SavingsAccount extends Account{
 
 SavingsAccount(){
   super();
-
 }
 }
 
-class Bank
+class Main
 {
 static Scanner sc=new Scanner(System.in);
-
-
 
 static void add_account(Customer x){
 int g;
 Account a;
 
 x.accounts++;
-
 
 System.out.println("Choose Account type:\n1.Current\n2.Savings");
 g=sc.nextInt();
@@ -144,31 +138,23 @@ a.account_no=x.accounts;
 (x.v).add(a);
 break;
 }
-
-
-
-
 }
 
 static void delete_account(Customer x){
-System.out.println("Enter Account number to be Deleted");
+System.out.println("\nEnter Account number to be Deleted");
 Vector<Account> v=x.v;
 int n=sc.nextInt();
 
 for(int i=0;i<v.size();i++){
-//System.out.println(v.get(i).nam);
 if(v.get(i).account_no==n){
-//System.out.println("Deleting "+str);
 v.removeElementAt(i);
 break;
-
 }
 }
 }
 
 static void modify_account(Customer a){
-
-System.out.println("Choose to modify:\n1.Name\n2.Card Number\n3.PIN\n4.Password");
+System.out.println("Choose detail to modify:\n1.Name\n2.Card Number\n3.PIN\n4.Password");
 int f=sc.nextInt();
 switch(f){
 case 1:
@@ -194,19 +180,12 @@ static void display(Customer x){
 System.out.println("\nName : "+x.nam);
 for(int i=0;i<(x.v).size();i++){
 
-System.out.println(" Account No: "+(x.v).get(i).account_no+"Balence:"+(x.v).get(i).balence);
-
+System.out.println("Account No: "+(x.v).get(i).account_no+"\nBalance:"+(x.v).get(i).balance);
 }
 }
-
-
 
 public static void main(String args[])
 {
-
-
-
-
 Customer p1=new Customer();
 
 int d,g,no;
@@ -215,16 +194,17 @@ System.out.println("Enter your details");
 System.out.print("\nName: ");
 p1.nam=sc.next();
 
-System.out.print("\nCardNo: ");
+System.out.print("\nCard Number: ");
 p1.card_no=sc.nextInt();
 System.out.print("\nPin ");
 p1.pin=sc.nextInt();
 
-System.out.println("\nEnter Password : ");
+System.out.println("\nEnter Password: ");
 p1.pass=sc.next();
 System.out.println("\nHello "+p1.nam);
+
 do{
-System.out.println("What you want to do?\n1.Add Account\n2.Delete Account\n3.Modify Account\n4.Print\n5.Transaction");
+System.out.println("Select Option\n1.Add Account\n2.Delete Account\n3.Modify Account Details\n4.Print Balance\n5.Perform a Transaction");
 g=sc.nextInt();
 
 switch(g){
@@ -235,6 +215,7 @@ break;
 case 2:
 delete_account(p1);
 break;
+
 case 3:
 modify_account(p1);
 break;
@@ -265,9 +246,5 @@ break;
 System.out.println("1.Continue\n0.End");
 d=sc.nextInt();
 }while(d==1);
-
-
-
-
 }
 }
